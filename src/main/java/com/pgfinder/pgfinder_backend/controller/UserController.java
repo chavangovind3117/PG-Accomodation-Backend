@@ -1,11 +1,13 @@
 //src/main/java/com/pgfinder/controller/UserController.java
 package com.pgfinder.pgfinder_backend.controller;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -21,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.pgfinder.pgfinder_backend.Enum.UserRole;
 import com.pgfinder.pgfinder_backend.entity.User;
+import com.pgfinder.pgfinder_backend.security.SimpleJwtUtil;
 import com.pgfinder.pgfinder_backend.service.UserService;
 
 @RestController
@@ -55,9 +58,62 @@ public class UserController {
 		return user.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
 	}
 
-	@PostMapping
+	@PostMapping("/signup")
 	public User createUser(@RequestBody User user) {
 		return userService.createUser(user);
+	}
+
+	// In your UserController.java
+	@Autowired
+	private SimpleJwtUtil jwtUtil; // Add this line
+
+	@PostMapping("/login")
+	public ResponseEntity<?> login(@RequestBody Map<String, String> loginRequest) {
+		try {
+			String email = loginRequest.get("email");
+			String password = loginRequest.get("password");
+			String requestedRole = loginRequest.get("role");
+
+			Optional<User> userOpt = userService.getUserByEmail(email);
+			if (userOpt.isPresent()) {
+				User user = userOpt.get();
+
+				// Check if password matches
+				if (user.getPassword().equals(password)) {
+
+					// Validate that requested role matches user's actual role
+					if (requestedRole != null && !user.getRole().toString().equals(requestedRole)) {
+						Map<String, String> errorResponse = new HashMap<>();
+						errorResponse.put("message",
+								"Invalid role for this user. Expected: " + user.getRole() + ", Got: " + requestedRole);
+						return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
+					}
+
+					// Generate JWT token
+					String token = jwtUtil.generateToken(user.getEmail(), user.getRole().toString(), user.getId());
+
+					// Create response with token, user, and success message
+					Map<String, Object> response = new HashMap<>();
+					response.put("message", "Login successful");
+					response.put("token", token);
+					response.put("user", user);
+
+					return ResponseEntity.ok(response);
+				} else {
+					Map<String, String> errorResponse = new HashMap<>();
+					errorResponse.put("message", "Invalid password");
+					return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
+				}
+			} else {
+				Map<String, String> errorResponse = new HashMap<>();
+				errorResponse.put("message", "User not found");
+				return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+			}
+		} catch (Exception e) {
+			Map<String, String> errorResponse = new HashMap<>();
+			errorResponse.put("message", "Login failed: " + e.getMessage());
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+		}
 	}
 
 // @PutMapping("/{id}")

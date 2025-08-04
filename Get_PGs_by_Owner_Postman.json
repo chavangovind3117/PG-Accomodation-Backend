@@ -1,0 +1,111 @@
+{
+	"info": {
+		"_postman_id": "get-pgs-by-owner",
+		"name": "Get PGs by Owner ID",
+		"description": "Retrieve all PG accommodations owned by a specific user",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Get PGs by Owner ID",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/pgs/owner/{{owner_id}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"pgs",
+						"owner",
+						"{{owner_id}}"
+					]
+				},
+				"description": "This endpoint retrieves all PG accommodations that are owned by a specific user (owner).\n\n**Endpoint Details:**\n- **Method**: GET\n- **URL**: `/api/pgs/owner/{ownerId}`\n- **Path Parameter**: `ownerId` (Long) - The ID of the owner/user\n\n**Response:**\n- **Success (200)**: Returns a list of PG objects owned by the specified user\n- **Error (500)**: Returns error message if failed to fetch owner PGs\n\n**Example Response:**\n```json\n[\n  {\n    \"id\": 1,\n    \"name\": \"Sunshine PG\",\n    \"location\": \"Andheri West\",\n    \"description\": \"Comfortable PG accommodation\",\n    \"price\": 12000,\n    \"address\": \"123 Sunshine Street\",\n    \"city\": \"Mumbai\",\n    \"state\": \"Maharashtra\",\n    \"amenities\": [\"WiFi\", \"AC\", \"Food\"],\n    \"images\": [],\n    \"rating\": 4.5,\n    \"reviewCount\": 25,\n    \"status\": \"ACTIVE\",\n    \"createdAt\": \"2024-01-15T10:30:00\",\n    \"updatedAt\": \"2024-01-15T10:30:00\"\n  }\n]\n```"
+			},
+			"response": [
+				{
+					"name": "Success Response",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/pgs/owner/2",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"pgs",
+								"owner",
+								"2"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "[\n  {\n    \"id\": 1,\n    \"name\": \"Sunshine PG\",\n    \"location\": \"Andheri West\",\n    \"description\": \"Comfortable PG accommodation with modern amenities\",\n    \"price\": 12000,\n    \"address\": \"123 Sunshine Street, Andheri West\",\n    \"city\": \"Mumbai\",\n    \"state\": \"Maharashtra\",\n    \"amenities\": [\n      \"WiFi\",\n      \"AC\",\n      \"Food\",\n      \"Laundry\",\n      \"Security\"\n    ],\n    \"images\": [],\n    \"rating\": 4.5,\n    \"reviewCount\": 25,\n    \"status\": \"ACTIVE\",\n    \"createdAt\": \"2024-01-15T10:30:00\",\n    \"updatedAt\": \"2024-01-15T10:30:00\"\n  },\n  {\n    \"id\": 2,\n    \"name\": \"Green Valley PG\",\n    \"location\": \"Bandra East\",\n    \"description\": \"Eco-friendly PG with garden view\",\n    \"price\": 15000,\n    \"address\": \"456 Green Valley Road, Bandra East\",\n    \"city\": \"Mumbai\",\n    \"state\": \"Maharashtra\",\n    \"amenities\": [\n      \"WiFi\",\n      \"AC\",\n      \"Food\",\n      \"Garden\",\n      \"Parking\"\n    ],\n    \"images\": [],\n    \"rating\": 4.7,\n    \"reviewCount\": 18,\n    \"status\": \"ACTIVE\",\n    \"createdAt\": \"2024-01-16T14:20:00\",\n    \"updatedAt\": \"2024-01-16T14:20:00\"\n  }\n]"
+				},
+				{
+					"name": "Error Response",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/pgs/owner/999",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"pgs",
+								"owner",
+								"999"
+							]
+						}
+					},
+					"status": "Internal Server Error",
+					"code": 500,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n  \"message\": \"Failed to fetch owner PGs: Owner not found with ID: 999\"\n}"
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8080",
+			"type": "string"
+		},
+		{
+			"key": "owner_id",
+			"value": "2",
+			"type": "string"
+		}
+	]
+} 

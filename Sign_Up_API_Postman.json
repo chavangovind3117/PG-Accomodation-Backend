@@ -1,0 +1,150 @@
+{
+	"info": {
+		"_postman_id": "sign-up-api",
+		"name": "User Sign Up API",
+		"description": "API for user registration/sign up",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "User Sign Up",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john.doe@example.com\",\n  \"password\": \"password123\",\n  \"phone\": \"+91-9876543210\",\n  \"occupation\": \"Software Engineer\",\n  \"role\": \"USER\"\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/users",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"users"
+					]
+				},
+				"description": "**User Registration/Sign Up API**\n\nThis endpoint creates a new user account in the system.\n\n**Endpoint Details:**\n- **Method**: POST\n- **URL**: `/api/users`\n- **Content-Type**: `application/json`\n\n**Required Fields:**\n- `name` (String) - User's full name\n- `email` (String) - Unique email address\n- `password` (String) - User's password\n\n**Optional Fields:**\n- `phone` (String) - Phone number\n- `occupation` (String) - User's occupation\n- `role` (String) - User role: `\"USER\"` or `\"OWNER\"` (defaults to `\"USER\"`)\n\n**Response:**\n- **Success (200)**: Returns the created user object\n- **Error (400/500)**: Returns error message if validation fails\n\n**Example Success Response:**\n```json\n{\n  \"id\": 1,\n  \"name\": \"John Doe\",\n  \"email\": \"john.doe@example.com\",\n  \"password\": \"password123\",\n  \"phone\": \"+91-9876543210\",\n  \"occupation\": \"Software Engineer\",\n  \"role\": \"USER\",\n  \"createdAt\": \"2024-01-15T10:30:00\",\n  \"updatedAt\": \"2024-01-15T10:30:00\"\n}\n```\n\n**Example Error Response:**\n```json\n{\n  \"message\": \"Email already exists\"\n}\n```"
+			},
+			"response": [
+				{
+					"name": "Success Response",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john.doe@example.com\",\n  \"password\": \"password123\",\n  \"phone\": \"+91-9876543210\",\n  \"occupation\": \"Software Engineer\",\n  \"role\": \"USER\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/users",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"users"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n  \"id\": 1,\n  \"name\": \"John Doe\",\n  \"email\": \"john.doe@example.com\",\n  \"password\": \"password123\",\n  \"phone\": \"+91-9876543210\",\n  \"occupation\": \"Software Engineer\",\n  \"role\": \"USER\",\n  \"createdAt\": \"2024-01-15T10:30:00\",\n  \"updatedAt\": \"2024-01-15T10:30:00\"\n}"
+				},
+				{
+					"name": "Error Response - Email Exists",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john.doe@example.com\",\n  \"password\": \"password123\",\n  \"phone\": \"+91-9876543210\",\n  \"occupation\": \"Software Engineer\",\n  \"role\": \"USER\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/users",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"users"
+							]
+						}
+					},
+					"status": "Bad Request",
+					"code": 400,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						}
+					],
+					"cookie": [],
+					"body": "{\n  \"message\": \"Email already exists\"\n}"
+				}
+			]
+		},
+		{
+			"name": "Owner Sign Up",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"name\": \"Jane Smith\",\n  \"email\": \"jane.smith@example.com\",\n  \"password\": \"ownerpass123\",\n  \"phone\": \"+91-9876543211\",\n  \"occupation\": \"PG Owner\",\n  \"role\": \"OWNER\"\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/users",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"users"
+					]
+				},
+				"description": "Sign up for a PG Owner account"
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8080",
+			"type": "string"
+		}
+	]
+} 

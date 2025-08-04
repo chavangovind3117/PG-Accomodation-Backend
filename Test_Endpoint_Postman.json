@@ -1,0 +1,55 @@
+{
+	"info": {
+		"_postman_id": "test-endpoint",
+		"name": "Test PG Endpoint",
+		"description": "Test to verify the PG endpoint is working",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Test PG API",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/pgs/test",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"pgs",
+						"test"
+					]
+				},
+				"description": "Test if the PG API is working"
+			},
+			"response": []
+		},
+		{
+			"name": "Get PGs by Owner - Direct URL",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/pgs/owner/3",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"pgs",
+						"owner",
+						"3"
+					]
+				},
+				"description": "Direct test of the Get PGs by Owner endpoint"
+			},
+			"response": []
+		}
+	]
+} 

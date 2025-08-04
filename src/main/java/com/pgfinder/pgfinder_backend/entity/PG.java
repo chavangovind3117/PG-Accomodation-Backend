@@ -25,6 +25,7 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "pgs")
 public class PG {
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
@@ -71,7 +72,18 @@ public class PG {
 	@Column(name = "updated_at")
 	private LocalDateTime updatedAt;
 
-	// Explicit getters and setters
+	// Default constructor
+	public PG() {
+	}
+
+	// Constructor with required fields
+	public PG(String name, String location, BigDecimal price) {
+		this.name = name;
+		this.location = location;
+		this.price = price;
+	}
+
+	// Getters and Setters
 	public Long getId() {
 		return id;
 	}
@@ -200,6 +212,7 @@ public class PG {
 		this.updatedAt = updatedAt;
 	}
 
+	// Lifecycle methods
 	@PrePersist
 	protected void onCreate() {
 		createdAt = LocalDateTime.now();
@@ -209,5 +222,12 @@ public class PG {
 	@PreUpdate
 	protected void onUpdate() {
 		updatedAt = LocalDateTime.now();
+	}
+
+	// toString method for debugging
+	@Override
+	public String toString() {
+		return "PG{" + "id=" + id + ", name='" + name + '\'' + ", location='" + location + '\'' + ", price=" + price
+				+ ", status=" + status + '}';
 	}
 }
