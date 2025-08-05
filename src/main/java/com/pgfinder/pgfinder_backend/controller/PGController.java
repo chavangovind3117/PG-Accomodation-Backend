@@ -11,6 +11,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -118,6 +119,33 @@ public class PGController {
 		}
 	}
 
+	// New authenticated endpoint for current user's PGs
+	@GetMapping("/my-pgs")
+	public ResponseEntity<?> getMyPGs() {
+		try {
+			// Get current authenticated user
+			org.springframework.security.core.Authentication authentication = SecurityContextHolder.getContext()
+					.getAuthentication();
+
+			if (authentication != null && authentication.isAuthenticated()) {
+				String email = authentication.getName();
+				Optional<User> userOpt = userService.getUserByEmail(email);
+
+				if (userOpt.isPresent()) {
+					User user = userOpt.get();
+					List<PG> pgs = pgService.getPGsByOwnerId(user.getId());
+					return ResponseEntity.ok(pgs);
+				}
+			}
+
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "User not authenticated"));
+		} catch (Exception e) {
+			Map<String, String> errorResponse = new HashMap<>();
+			errorResponse.put("message", "Failed to fetch your PGs: " + e.getMessage());
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+		}
+	}
+
 	// Create new PG with images (Updated for single JSON)
 	@PostMapping
 	public ResponseEntity<?> createPG(@RequestBody Map<String, Object> requestBody) {
@@ -177,7 +205,32 @@ public class PGController {
 		try {
 			Optional<PG> existingPG = pgService.getPGById(id);
 			if (existingPG.isPresent()) {
+				PG existingPgData = existingPG.get();
+
+				// Check if user is authenticated and is the owner
+				org.springframework.security.core.Authentication authentication = SecurityContextHolder.getContext()
+						.getAuthentication();
+
+				if (authentication != null && authentication.isAuthenticated()) {
+					String email = authentication.getName();
+					Optional<User> currentUserOpt = userService.getUserByEmail(email);
+
+					if (currentUserOpt.isPresent()) {
+						User currentUser = currentUserOpt.get();
+
+						// Check if current user is the owner of this PG
+						if (!currentUser.getId().equals(existingPgData.getOwner().getId())) {
+							Map<String, String> errorResponse = new HashMap<>();
+							errorResponse.put("message", "You can only update your own PGs");
+							return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
+						}
+					}
+				}
+
+				// Preserve the original owner - don't allow changing ownership
 				pg.setId(id);
+				pg.setOwner(existingPgData.getOwner()); // Keep the original owner
+
 				PG updatedPG = pgService.updatePG(pg);
 
 				Map<String, Object> response = new HashMap<>();
@@ -206,7 +259,27 @@ public class PGController {
 			if (existingPGOpt.isPresent()) {
 				PG existingPG = existingPGOpt.get();
 
-				// Update fields based on the map
+				// Check if user is authenticated and is the owner
+				org.springframework.security.core.Authentication authentication = SecurityContextHolder.getContext()
+						.getAuthentication();
+
+				if (authentication != null && authentication.isAuthenticated()) {
+					String email = authentication.getName();
+					Optional<User> currentUserOpt = userService.getUserByEmail(email);
+
+					if (currentUserOpt.isPresent()) {
+						User currentUser = currentUserOpt.get();
+
+						// Check if current user is the owner of this PG
+						if (!currentUser.getId().equals(existingPG.getOwner().getId())) {
+							Map<String, String> errorResponse = new HashMap<>();
+							errorResponse.put("message", "You can only update your own PGs");
+							return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
+						}
+					}
+				}
+
+				// Update fields based on the map (but don't allow owner changes)
 				updates.forEach((key, value) -> {
 					switch (key) {
 					case "name":
@@ -250,6 +323,7 @@ public class PGController {
 					case "status":
 						existingPG.setStatus(PGStatus.valueOf((String) value));
 						break;
+					// Note: We don't handle "owner" field to prevent ownership changes
 					}
 				});
 
@@ -278,6 +352,28 @@ public class PGController {
 		try {
 			Optional<PG> pg = pgService.getPGById(id);
 			if (pg.isPresent()) {
+				PG pgData = pg.get();
+
+				// Check if user is authenticated and is the owner
+				org.springframework.security.core.Authentication authentication = SecurityContextHolder.getContext()
+						.getAuthentication();
+
+				if (authentication != null && authentication.isAuthenticated()) {
+					String email = authentication.getName();
+					Optional<User> currentUserOpt = userService.getUserByEmail(email);
+
+					if (currentUserOpt.isPresent()) {
+						User currentUser = currentUserOpt.get();
+
+						// Check if current user is the owner of this PG
+						if (!currentUser.getId().equals(pgData.getOwner().getId())) {
+							Map<String, String> errorResponse = new HashMap<>();
+							errorResponse.put("message", "You can only delete your own PGs");
+							return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
+						}
+					}
+				}
+
 				pgService.deletePG(id);
 
 				Map<String, String> response = new HashMap<>();
